@@ -38,6 +38,16 @@
   #lb .cap{font-family:'Mitr';font-size:18px;color:#e6cf94;text-align:center}
   #lb .say{font-size:15px;background:#c9a24a;color:#1e1608;padding:6px 14px;border-radius:999px}
   #lb .x{font-size:13px;opacity:.75}
+  #welcome{position:fixed;inset:0;z-index:12;display:flex;align-items:flex-end;justify-content:center;
+      background:linear-gradient(to top,rgba(12,9,6,.92) 0%,rgba(12,9,6,.55) 45%,rgba(12,9,6,0) 75%);
+      padding:0 max(16px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+  #welcome .card{max-width:440px;width:100%;text-align:center;display:flex;flex-direction:column;gap:12px}
+  #welcome h2{font-family:'Mitr';font-weight:500;font-size:22px;margin:0;color:#f4ead2}
+  #welcome p{margin:0;font-size:14px;opacity:.85}
+  #welcome button{font-family:'Mitr';font-size:18px;border-radius:14px;padding:14px 16px;cursor:pointer;border:1px solid #c9a24a}
+  #welcome .go{background:#c9a24a;color:#1e1608;box-shadow:0 8px 24px rgba(201,162,74,.35)}
+  #welcome .ov{background:rgba(20,16,12,.6);color:#f4ead2}
+  #welcome[hidden]{display:none}
   #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9;background:rgba(20,16,12,.8);color:#f4ead2;padding:8px 14px;border-radius:12px;font-size:14px;display:none}
   body.fp .hud{display:none}
   .bar button.walk{background:#c9a24a;color:#1e1608;border-color:#c9a24a;font-weight:700}
@@ -65,6 +75,12 @@
 <div id="cross"></div>
 <div id="lb" role="dialog" aria-label="ภาพในกรอบรูป"><img alt=""><div class="cap"></div><div class="say">🔊 สวัสดีจ้า ปายมาแล้ว</div><div class="x">แตะที่ใดก็ได้เพื่อปิด</div></div>
 <div id="toast"></div>
+<div id="welcome"><div class="card">
+  <h2>ยินดีต้อนรับสู่ โรงแรมแห่งชีวิต</h2>
+  <p>นิทรรศการบทกวี “คิดไม่ถึง” บทที่ 7 · โถงกลางตึก SC1</p>
+  <button class="go" id="wGo">🚶 เดินชมเอง (มีจอยสติ๊ก)</button>
+  <button class="ov" id="wOv">🛰️ ดูภาพรวมจากมุมสูง</button>
+</div></div>
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -438,6 +454,11 @@ canvas.addEventListener('pointerup',e=>{
   openPhoto(hit.object.userData.photo);});
 canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||e.buttons)return;canvas.style.cursor=hitPhoto(e.clientX,e.clientY)?'pointer':'';});
 try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();}catch(e){}
+
+/* ================= WELCOME ================= */
+const welcome=document.getElementById('welcome');
+document.getElementById('wGo').onclick=()=>{welcome.hidden=true;setFP(true);};
+document.getElementById('wOv').onclick=()=>{welcome.hidden=true;};
 
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);labelR.setSize(innerWidth,innerHeight);});
 const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;

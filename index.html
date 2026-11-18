@@ -23,7 +23,7 @@
   .lab b{background:#c9a24a;color:#fff;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
   body.shot .bar,body.shot .hud{display:none}
   body.nolab .lab{display:none}
-  #joy{position:fixed;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(86px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;
+  #joy{position:fixed;left:calc(22px + env(safe-area-inset-left,0px));bottom:calc(36px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;
        background:radial-gradient(circle,rgba(230,207,148,.10),rgba(20,16,12,.55));border:1.5px solid rgba(230,207,148,.45);z-index:4;touch-action:none;display:none;backdrop-filter:blur(4px)}
   #joy .knob{position:absolute;left:50%;top:50%;width:50px;height:50px;margin:-25px 0 0 -25px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f3dfa4,#b8862b);box-shadow:0 4px 14px rgba(0,0,0,.5)}
   #fphint{max-width:92vw;text-align:center;white-space:normal !important;position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:4;display:none;font-size:13px;
@@ -49,7 +49,12 @@
   #welcome .ov{background:rgba(20,16,12,.6);color:#f4ead2}
   #welcome[hidden]{display:none}
   #toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9;background:rgba(20,16,12,.8);color:#f4ead2;padding:8px 14px;border-radius:12px;font-size:14px;display:none}
-  body.fp .hud{display:none}
+  body.fp .hud,body.fp .bar,body.fp .lab{display:none !important}
+  #fpexit{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));top:calc(14px + env(safe-area-inset-top,0px));z-index:5;display:none;
+      width:40px;height:40px;border-radius:50%;border:1px solid rgba(230,207,148,.4);background:rgba(20,16,12,.45);color:#f4ead2;font-size:18px;cursor:pointer;backdrop-filter:blur(4px)}
+  body.fp #fpexit{display:block}
+  #fphint{transition:opacity .8s}
+  #fphint.gone{opacity:0;pointer-events:none}
   .bar button.walk{background:#c9a24a;color:#1e1608;border-color:#c9a24a;font-weight:700}
   @media (max-width:640px){
     .hud h1{font-size:18px}.hud p{display:none}.hud .e{font-size:10px}
@@ -73,6 +78,7 @@
 <div id="joy"><div class="knob"></div></div>
 <div id="fphint">ลากจอยสติ๊กเพื่อเดิน · ลากจอเพื่อหันมอง · แตะกรอบรูปเพื่อดู</div>
 <div id="cross"></div>
+<button id="fpexit" aria-label="ออกจากโหมดเดินชม" title="ออกจากโหมดเดินชม">✕</button>
 <div id="lb" role="dialog" aria-label="ภาพในกรอบรูป"><img alt=""><div class="cap"></div><div class="say">🔊 สวัสดีจ้า ปายมาแล้ว</div><div class="x">แตะที่ใดก็ได้เพื่อปิด</div></div>
 <div id="toast"></div>
 <div id="welcome"><div class="card">
@@ -399,7 +405,7 @@ function setFP(on){
   fp=on;document.body.classList.toggle('fp',on);controls.enabled=!on;tween=null;tour=false;tb.classList.remove('on');
   ceiling.visible=on;camera.fov=on?72:42;camera.updateProjectionMatrix();
   walkBtn.textContent=on?'🛰️ มุมมองภาพรวม':'🚶 เดินชมเอง';
-  if(on){fpTeleport('overview');}else{go('overview',true);}
+  if(on){fpTeleport('overview');const hint=document.getElementById('fphint');hint.classList.remove('gone');clearTimeout(setFP.t);setFP.t=setTimeout(()=>hint.classList.add('gone'),4500);}else{go('overview',true);}
 }
 // joystick
 const joy=document.getElementById('joy'),knob=joy.querySelector('.knob');const J={x:0,y:0,id:null};
@@ -459,6 +465,8 @@ try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthe
 const welcome=document.getElementById('welcome');
 document.getElementById('wGo').onclick=()=>{welcome.hidden=true;setFP(true);};
 document.getElementById('wOv').onclick=()=>{welcome.hidden=true;};
+
+document.getElementById('fpexit').onclick=()=>setFP(false);
 
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);labelR.setSize(innerWidth,innerHeight);});
 const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
